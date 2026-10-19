@@ -360,7 +360,7 @@ class SettingsWindow(QMainWindow):
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(12)
 
-        lbl_app_title = QLabel("LangAlert v1.0.0")
+        lbl_app_title = QLabel("⚡ LangAlert v1.0.1")
         lbl_app_title.setFont(QFont("Vazirmatn", 18, QFont.Weight.Bold))
         lbl_app_title.setStyleSheet("color: #00f0ff;")
         layout.addWidget(lbl_app_title)

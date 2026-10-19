@@ -91,10 +91,10 @@ python build_standalone.py
 
 #### 🐧 لینوکس (Linux / Debian / Ubuntu):
 برای کاربران لینوکس، هم پکیج استاندارد دبیان (`.deb`) و هم باینری پرتابل آماده است:
-* **بسته نصبی دبیان/اوبونتو (`langalert_1.0.0_amd64.deb`):**
+* **بسته نصبی دبیان/اوبونتو (`langalert_1.0.1_amd64.deb`):**
   نصب آسان در اوبونتو، دبیان، مینت و سایر توزیع‌های مبتنی بر دبیان با دستور:
   ```bash
-  sudo dpkg -i langalert_1.0.0_amd64.deb
+  sudo dpkg -i langalert_1.0.1_amd64.deb
   ```
   این بسته برنامه را به منوی برنامه‌ها (Application Menu) همراه با آیکون ⚡ و به مسیر `/usr/bin/langalert` اضافه می‌کند.
 
@@ -104,11 +104,11 @@ chmod +x build_linux.sh
 ./build_linux.sh
 ```
 * خروجی‌های لینوکس:
-  - بسته نصبی: `dist/packages/langalert_1.0.0_amd64.deb`
+  - بسته نصبی: `dist/packages/langalert_1.0.1_amd64.deb`
   - آرشیو فشرده مستقل: `dist/packages/LangAlert-linux-x86_64.tar.gz`
 
 #### 🚀 خط لوله خودکار CI/CD (GitHub Actions):
-یک ورک‌فلو کامل در مسیر `.github/workflows/build.yml` فعال است که با هر انتشار یا کامیت روی گیت‌هاب، فایل‌های `LangAlert-Setup.exe`، `LangAlert.exe` و `langalert_1.0.0_amd64.deb` را به صورت خودکار بیلد کرده و برای دانلود قرار می‌دهد.
+یک ورک‌فلو کامل در مسیر `.github/workflows/build.yml` فعال است که با هر انتشار یا کامیت روی گیت‌هاب، فایل‌های `LangAlert-Setup.exe`، `LangAlert.exe` و `langalert_1.0.1_amd64.deb` را به صورت خودکار بیلد کرده و برای دانلود قرار می‌دهد.
 
 ---
 
@@ -203,10 +203,10 @@ python build_standalone.py
   - Portable Executable: `dist/LangAlert.exe`
 
 #### 🐧 Linux (Debian / Ubuntu / Generic):
-* **Debian/Ubuntu Package (`langalert_1.0.0_amd64.deb`):**
+* **Debian/Ubuntu Package (`langalert_1.0.1_amd64.deb`):**
   Install natively using:
   ```bash
-  sudo dpkg -i langalert_1.0.0_amd64.deb
+  sudo dpkg -i langalert_1.0.1_amd64.deb
   ```
   Integrates with your system's Application Menu with the ⚡ icon and symlinks to `/usr/bin/langalert`.
 
@@ -216,7 +216,7 @@ chmod +x build_linux.sh
 ./build_linux.sh
 ```
 * Output packages:
-  - Debian package: `dist/packages/langalert_1.0.0_amd64.deb`
+  - Debian package: `dist/packages/langalert_1.0.1_amd64.deb`
   - Standalone tar.gz: `dist/packages/LangAlert-linux-x86_64.tar.gz`
 
 #### 🚀 Automated Multiplatform CI/CD:

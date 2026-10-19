@@ -1,13 +1,11 @@
-"""
-LangAlert Windows GUI Setup Installer.
-Installs LangAlert.exe and shortcuts to user local application directory with ⚡ icon.
-"""
 import sys
 import os
 import shutil
 import tempfile
 import subprocess
 import winreg
+import base64
+import time
 from pathlib import Path
 
 from PyQt6.QtWidgets import (
@@ -19,30 +17,53 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
 APP_NAME = "LangAlert"
 APP_DISPLAY_NAME = "⚡ LangAlert — دستیار زبان کیبورد"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 PUBLISHER = "MrByte98"
 
 def create_windows_shortcut(target_path: Path, lnk_path: Path, icon_path: Path = None, description: str = ""):
-    """Creates a Windows .lnk shortcut via WScript.Shell VBScript."""
+    """Creates a Windows .lnk shortcut via WScript.Shell with UTF-16 encoding and PowerShell fallback."""
     lnk_path.parent.mkdir(parents=True, exist_ok=True)
+    safe_desc = description.encode("ascii", "replace").decode("ascii")
     vbs_content = f'''Set ws = CreateObject("WScript.Shell")
 Set s = ws.CreateShortcut("{str(lnk_path)}")
 s.TargetPath = "{str(target_path)}"
 s.WorkingDirectory = "{str(target_path.parent)}"
-s.Description = "{description}"
+s.Description = "{safe_desc}"
 '''
     if icon_path and icon_path.exists():
         vbs_content += f's.IconLocation = "{str(icon_path)}, 0"\n'
     vbs_content += 's.Save\n'
 
-    with tempfile.NamedTemporaryFile("w", suffix=".vbs", delete=False) as f:
+    success = False
+    with tempfile.NamedTemporaryFile("w", suffix=".vbs", encoding="utf-16", delete=False) as f:
         f.write(vbs_content)
         temp_vbs = f.name
     try:
-        subprocess.run(["cscript", "//nologo", temp_vbs], check=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        res = subprocess.run(["cscript", "//nologo", temp_vbs], capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        if res.returncode == 0 and lnk_path.exists():
+            success = True
+    except Exception:
+        pass
     finally:
         if os.path.exists(temp_vbs):
             os.remove(temp_vbs)
+
+    if not success or not lnk_path.exists():
+        try:
+            ps_script = f'''
+$ws = New-Object -ComObject WScript.Shell
+$s = $ws.CreateShortcut('{str(lnk_path)}')
+$s.TargetPath = '{str(target_path)}'
+$s.WorkingDirectory = '{str(target_path.parent)}'
+$s.Description = '{safe_desc}'
+'''
+            if icon_path and icon_path.exists():
+                ps_script += f"$s.IconLocation = '{str(icon_path)}, 0'\n"
+            ps_script += "$s.Save()\n"
+            encoded = base64.b64encode(ps_script.encode("utf-16le")).decode("ascii")
+            subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded], creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        except Exception as e:
+            print(f"Error creating shortcut via PowerShell: {e}")
 
 def register_uninstaller(install_dir: Path, target_exe: Path, icon_path: Path):
     """Registers LangAlert in Windows Add/Remove Programs (Registry)."""
@@ -90,17 +111,37 @@ class InstallWorker(QThread):
         try:
             self.progress.emit(10, "در حال آماده‌سازی فایل‌های نصب...")
             
-            # Source executable bundled or next to installer
+            # Source executable search
             base_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
-            src_exe = base_dir / "LangAlert.exe"
-            if not src_exe.exists():
-                src_exe = base_dir / "dist" / "LangAlert.exe"
-            if not src_exe.exists():
-                src_exe = Path(__file__).resolve().parent.parent / "dist" / "LangAlert.exe"
+            exe_name = "LangAlert.exe"
+            candidates = [
+                base_dir / exe_name,
+                base_dir / "dist" / exe_name,
+                Path(sys.executable).parent / exe_name,
+                Path(sys.executable).parent / "dist" / exe_name,
+                Path(__file__).resolve().parent.parent / "dist" / exe_name,
+                Path.cwd() / "dist" / exe_name,
+                Path.cwd() / exe_name,
+            ]
+            src_exe = None
+            for cand in candidates:
+                if cand.exists() and cand.is_file():
+                    src_exe = cand
+                    break
 
-            src_icon = base_dir / "assets" / "icon.ico"
-            if not src_icon.exists():
-                src_icon = Path(__file__).resolve().parent.parent / "assets" / "icon.ico"
+            if not src_exe:
+                raise FileNotFoundError("فایل اصلی برنامه (LangAlert.exe) در بسته نصب یافت نشد!")
+
+            icon_candidates = [
+                base_dir / "assets" / "icon.ico",
+                Path(__file__).resolve().parent.parent / "assets" / "icon.ico",
+                Path.cwd() / "assets" / "icon.ico",
+            ]
+            src_icon = None
+            for cand in icon_candidates:
+                if cand.exists() and cand.is_file():
+                    src_icon = cand
+                    break
 
             # Destination directory
             dest_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")) / "Programs" / APP_NAME
@@ -111,21 +152,35 @@ class InstallWorker(QThread):
             self.progress.emit(30, "در حال کپی و استقرار فایل‌های برنامه...")
             
             # Kill running instance if updating
-            subprocess.run(["taskkill", "/F", "/IM", "LangAlert.exe"], capture_output=True)
-            
-            shutil.copy2(src_exe, dest_exe)
-            if src_icon.exists():
+            try:
+                subprocess.run(["taskkill", "/F", "/IM", "LangAlert.exe"], capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                time.sleep(0.5)
+            except Exception:
+                pass
+
+            copied = False
+            for _ in range(5):
+                try:
+                    shutil.copy2(src_exe, dest_exe)
+                    copied = True
+                    break
+                except PermissionError:
+                    time.sleep(0.5)
+            if not copied:
+                shutil.copy2(src_exe, dest_exe)
+
+            if src_icon and src_icon.exists():
                 shutil.copy2(src_icon, dest_icon)
 
             self.progress.emit(60, "در حال ایجاد میانبرها و آیکون دسکتاپ...")
             if self.create_desktop:
                 desktop_lnk = Path.home() / "Desktop" / "LangAlert.lnk"
-                create_windows_shortcut(dest_exe, desktop_lnk, dest_icon, "LangAlert - دستیار زبان کیبورد")
+                create_windows_shortcut(dest_exe, desktop_lnk, dest_icon, "LangAlert")
 
             if self.create_start:
-                start_menu_dir = Path(os.environ["APPDATA"]) / "Microsoft" / "Windows" / "Start Menu" / "Programs"
+                start_menu_dir = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming")) / "Microsoft" / "Windows" / "Start Menu" / "Programs"
                 start_lnk = start_menu_dir / "LangAlert.lnk"
-                create_windows_shortcut(dest_exe, start_lnk, dest_icon, "LangAlert - دستیار زبان کیبورد")
+                create_windows_shortcut(dest_exe, start_lnk, dest_icon, "LangAlert")
 
             self.progress.emit(80, "در حال پیکربندی و ثبت در ویندوز...")
             register_uninstaller(dest_dir, dest_exe, dest_icon)
@@ -328,6 +383,10 @@ class InstallerWindow(QMainWindow):
             self.btn_install.setEnabled(True)
 
 def main():
+    if any(arg in sys.argv for arg in ["--silent", "-s", "/S", "/silent", "/verysilent"]):
+        worker = InstallWorker(create_desktop=True, create_start=True, autostart=True)
+        worker.run()
+        sys.exit(0)
     app = QApplication(sys.argv)
     win = InstallerWindow()
     win.show()

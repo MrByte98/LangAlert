@@ -103,7 +103,7 @@ def build():
     if sys.platform == "win32":
         print(f"1. Single Portable Executable: {DIST_DIR / 'LangAlert.exe'}")
         print(f"2. Single Setup Installer:     {DIST_DIR / 'LangAlert-Setup.exe'}")
-    print(f"3. Debian/Ubuntu Package:      {DIST_DIR / 'packages' / 'langalert_1.0.0_amd64.deb'}")
+    print(f"3. Debian/Ubuntu Package:      {DIST_DIR / 'packages' / 'langalert_1.0.1_amd64.deb'}")
     print("=" * 60)
 
 if __name__ == "__main__":

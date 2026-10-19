@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DIST_DIR = BASE_DIR / "dist"
 PACKAGES_DIR = DIST_DIR / "packages"
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 PACKAGE_NAME = "langalert"
 ARCH = "amd64"
 DEB_FILENAME = f"{PACKAGE_NAME}_{VERSION}_{ARCH}.deb"

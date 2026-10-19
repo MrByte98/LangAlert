@@ -40,6 +40,6 @@ python3 tools/build_deb.py
 
 echo "============================================================"
 echo "BUILD SUCCESSFUL! Linux packages:"
-echo "1. Debian/Ubuntu Package: dist/packages/langalert_1.0.0_amd64.deb"
+echo "1. Debian/Ubuntu Package: dist/packages/langalert_1.0.1_amd64.deb"
 echo "2. Standalone Archive:   dist/packages/LangAlert-linux-x86_64.tar.gz"
 echo "============================================================"

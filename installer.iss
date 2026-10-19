@@ -1,6 +1,6 @@
 ; Inno Setup Script for LangAlert
 #define MyAppName "LangAlert"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "MrByte98"
 #define MyAppURL "https://github.com/MrByte98/LangAlert"
 #define MyAppExeName "LangAlert.exe"
