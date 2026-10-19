@@ -1,4 +1,4 @@
-; Inno Setup Script for LangAlert
+; Inno Setup Script for LangAlert (Official Windows Standard Installer)
 #define MyAppName "LangAlert"
 #define MyAppVersion "1.0.1"
 #define MyAppPublisher "MrByte98"
@@ -16,18 +16,21 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={userpf}\{#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=dist
-OutputBaseFilename=LangAlert-Setup-v{#MyAppVersion}
+OutputBaseFilename=LangAlert-Setup
 SetupIconFile=assets\icon.ico
-Compression=lzma
+UninstallDisplayIcon={app}\icon.ico
+Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=lowest
+CloseApplications=yes
+CloseApplicationsFilter=LangAlert.exe
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "startupicon"; Description: "Run LangAlert automatically when Windows starts"; GroupDescription: "Windows Startup:"
 
 [Files]

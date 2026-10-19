@@ -6,6 +6,7 @@ Packages the application into:
 3. Debian/Ubuntu package (dist/packages/langalert_1.0.0_amd64.deb)
 """
 import sys
+import os
 import subprocess
 import shutil
 from pathlib import Path
@@ -63,32 +64,31 @@ def build():
         print(f"Error building standalone executable: {e}")
         sys.exit(1)
 
-    # 3. On Windows: Build the single-file setup installer (LangAlert-Setup.exe)
+    # 3. On Windows: Build the standard Inno Setup installer (dist/LangAlert-Setup.exe)
     if sys.platform == "win32":
-        print("\n[3/3] Building Windows GUI Setup Installer (LangAlert-Setup.exe)...")
-        built_exe = DIST_DIR / "LangAlert.exe"
-        if not built_exe.exists():
-            print(f"Error: {built_exe} not found!")
-            sys.exit(1)
+        print("\n[3/3] Compiling standard Windows installer with Inno Setup (LangAlert-Setup.exe)...")
+        iscc_path = shutil.which("iscc")
+        if not iscc_path:
+            candidates = [
+                Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Inno Setup 6" / "iscc.exe",
+                Path(os.environ.get("ProgramFiles(x86)", "C:/Program Files (x86)")) / "Inno Setup 6" / "iscc.exe",
+                Path(os.environ.get("ProgramFiles", "C:/Program Files")) / "Inno Setup 6" / "iscc.exe",
+            ]
+            for c in candidates:
+                if c.exists():
+                    iscc_path = str(c)
+                    break
 
-        data_built_exe = f"{str(built_exe)}{separator}."
-        cmd_installer = [
-            sys.executable, "-m", "PyInstaller",
-            "--noconsole",
-            "--onefile",
-            "--name=LangAlert-Setup",
-            "--clean",
-            "--icon", str(ICON_ICO),
-            "--add-data", data_built_exe,
-            "--add-data", data_assets,
-            "tools/installer_ui.py"
-        ]
-        print(f"Running command: {' '.join(cmd_installer)}")
-        try:
-            subprocess.run(cmd_installer, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error building setup installer: {e}")
-            sys.exit(1)
+        if iscc_path:
+            cmd_iscc = [iscc_path, str(BASE_DIR / "installer.iss")]
+            print(f"Running Inno Setup compiler: {' '.join(cmd_iscc)}")
+            try:
+                subprocess.run(cmd_iscc, check=True)
+                print("Inno Setup compilation successful!")
+            except subprocess.CalledProcessError as e:
+                print(f"Error compiling Inno Setup installer: {e}")
+        else:
+            print("Note: Inno Setup compiler (iscc.exe) not found. installer.iss is ready for compilation.")
 
     # 4. Generate Linux .deb package
     print("\nGenerating Debian/Ubuntu (.deb) package...")
