@@ -4,6 +4,8 @@ Matches the exact glowing cyan/purple aesthetic with Vazirmatn Persian typograph
 and real-time Opacity controls.
 """
 from datetime import datetime
+from pathlib import Path
+import sys
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout,
     QGridLayout, QLabel, QPushButton, QCheckBox, QSlider, QComboBox,
@@ -11,7 +13,7 @@ from PyQt6.QtWidgets import (
     QMessageBox, QAbstractItemView, QGraphicsDropShadowEffect
 )
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QCursor, QColor
+from PyQt6.QtGui import QFont, QCursor, QColor, QIcon
 import pyperclip
 
 from ..config import config
@@ -30,9 +32,15 @@ class SettingsWindow(QMainWindow):
     def __init__(self, history_manager=None, parent=None):
         super().__init__(parent)
         self.history_manager = history_manager or []
-        self.setWindowTitle("LangAlert — تنظیمات و مدیریت دستیار زبان کیبورد")
+        self.setWindowTitle("⚡ LangAlert — تنظیمات و مدیریت دستیار زبان کیبورد")
         self.resize(780, 640)
         self.setMinimumSize(700, 580)
+        
+        # Set icon
+        base_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent.parent))
+        icon_path = base_dir / "assets" / "icon.png"
+        if icon_path.exists():
+            self.setWindowIcon(QIcon(str(icon_path)))
         
         self.setStyleSheet(CYBER_DARK_THEME)
         self._init_ui()
@@ -53,7 +61,7 @@ class SettingsWindow(QMainWindow):
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(4, 0, 4, 0)
 
-        header_title = QLabel("LangAlert — دستیار هوشمند زبان کیبورد")
+        header_title = QLabel("⚡ LangAlert — دستیار هوشمند زبان کیبورد")
         header_title.setFont(QFont("Vazirmatn", 15, QFont.Weight.Bold))
         header_title.setStyleSheet("color: #f8fafc;")
         header_title.setLayoutDirection(Qt.LayoutDirection.RightToLeft)

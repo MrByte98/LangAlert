@@ -8,7 +8,14 @@ import re
 from pathlib import Path
 from typing import Set
 
-DICT_DIR = Path(__file__).parent / "dictionaries"
+import sys
+_meipass = getattr(sys, "_MEIPASS", None)
+if _meipass:
+    DICT_DIR = Path(_meipass) / "langswitch" / "dictionaries"
+    if not DICT_DIR.exists():
+        DICT_DIR = Path(_meipass) / "dictionaries"
+else:
+    DICT_DIR = Path(__file__).parent / "dictionaries"
 
 FA_PREFIXES = [
     "نمی‌", "نمی ", "نمی", "می‌", "می ", "می", "بی‌", "بی ", "بی", "با", "نا", "هم", "پیش", "باز", "بر"

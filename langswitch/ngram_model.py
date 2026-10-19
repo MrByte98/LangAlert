@@ -13,7 +13,16 @@ from typing import Dict, Tuple, Optional
 
 from .converter import convert_en_to_fa, convert_fa_to_en, is_english_char, is_persian_char
 
-DATA_DIR = Path(__file__).parent / "dictionaries"
+import sys
+
+_meipass = getattr(sys, "_MEIPASS", None)
+if _meipass:
+    DATA_DIR = Path(_meipass) / "langswitch" / "dictionaries"
+    if not DATA_DIR.exists():
+        DATA_DIR = Path(_meipass) / "dictionaries"
+else:
+    DATA_DIR = Path(__file__).parent / "dictionaries"
+
 NGRAM_EN_FILE = DATA_DIR / "ngram_en.json"
 NGRAM_FA_FILE = DATA_DIR / "ngram_fa.json"
 

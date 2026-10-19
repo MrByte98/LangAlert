@@ -49,15 +49,15 @@
 
 ---
 
-### ۳. نصب و اجرای مستقیم (از طریق پایتون)
+### ۳. دریافت، نصب و اجرای مستقیم (از طریق پایتون)
 
 #### پیش‌نیازها:
 * پایتون نسخه ۳.۱۰ یا بالاتر
 
 ```bash
-# کلون یا دانلود مخزن
-git clone https://github.com/your-username/auto_change.git
-cd auto_change
+# کلون مخزن رسمی برنامه
+git clone https://github.com/MrByte98/LangAlert.git
+cd LangAlert
 
 # نصب وابستگی‌ها
 pip install -r requirements.txt
@@ -71,30 +71,44 @@ python run.py --minimized
 
 ---
 
-### ۴. نحوه بیلد و ساخت فایل اجرایی مستقل (Standalone Build)
+### ۴. بسته‌های نصبی و فایل‌های اجرایی مستقل (Standalone & Packages)
 
-#### 🪟 بیلد ویندوز (Windows):
-پروژه مجهز به اسکریپت بیلد کاملاً خودکار است:
+#### 🪟 ویندوز (Windows):
+پروژه مجهز به اسکریپت بیلد کاملاً خودکار جهت تولید تک‌فایل نصبی و پرتابل است:
+* **تک‌فایل نصبی استاندارد (`LangAlert-Setup.exe`):**
+  با اجرای این فایل، برنامه به صورت خودکار در مسیر کاربری نصب شده، آیکون ⚡ روی دسکتاپ و منوی استارت ایجاد می‌گردد و در بخش Programs ویندوز (جهت حذف آسان در آینده) ثبت می‌شود.
+* **تک‌فایل بدون نیاز به نصب (`LangAlert.exe`):**
+  یک باینری کاملاً مستقل (Portable) که بدون نیاز به نصب یا استخراج، با دو بار کلیک مستقیماً اجرا می‌شود.
+
+برای بیلد مجدد در ویندوز:
 ```bash
-# نصب PyInstaller
-pip install pyinstaller
-
-# اجرای اسکریپت بیلد
+pip install pyinstaller pillow
 python build_standalone.py
 ```
-* خروجی در پوشه `dist/LangAlert/LangAlert.exe` قرار می‌گیرد.
-* همچنین فایل فشرده آماده انتشار `dist/LangAlert-windows-x64.zip` ایجاد می‌شود که بدون نیاز به پایتون روی هر سیستمی قابل اجراست.
+* خروجی‌های ویندوز:
+  - فایل نصبی: `dist/LangAlert-Setup.exe`
+  - فایل پرتابل: `dist/LangAlert.exe`
 
-#### 🐧 بیلد لینوکس (Linux):
-در محیط‌های لینوکسی (Ubuntu, Debian, Fedora, Arch) کافی است اسکریپت بیلد لینوکس را اجرا کنید:
+#### 🐧 لینوکس (Linux / Debian / Ubuntu):
+برای کاربران لینوکس، هم پکیج استاندارد دبیان (`.deb`) و هم باینری پرتابل آماده است:
+* **بسته نصبی دبیان/اوبونتو (`langalert_1.0.0_amd64.deb`):**
+  نصب آسان در اوبونتو، دبیان، مینت و سایر توزیع‌های مبتنی بر دبیان با دستور:
+  ```bash
+  sudo dpkg -i langalert_1.0.0_amd64.deb
+  ```
+  این بسته برنامه را به منوی برنامه‌ها (Application Menu) همراه با آیکون ⚡ و به مسیر `/usr/bin/langalert` اضافه می‌کند.
+
+برای بیلد بسته‌ها در لینوکس:
 ```bash
 chmod +x build_linux.sh
 ./build_linux.sh
 ```
-* خروجی به شکل بسته مستقل `dist/packages/LangAlert-linux-x86_64.tar.gz` ایجاد خواهد شد.
+* خروجی‌های لینوکس:
+  - بسته نصبی: `dist/packages/langalert_1.0.0_amd64.deb`
+  - آرشیو فشرده مستقل: `dist/packages/LangAlert-linux-x86_64.tar.gz`
 
-#### 🚀 بیلد ابری همزمان (GitHub Actions CI/CD):
-یک ورک‌فلو کامل در مسیر `.github/workflows/build.yml` قرار دارد که با هر Push یا Release، به طور همزمان روی ماشین‌های اوبونتو و ویندوز بیلد نیتیو گرفته و فایل‌های اجرایی را آماده دانلود می‌کند.
+#### 🚀 خط لوله خودکار CI/CD (GitHub Actions):
+یک ورک‌فلو کامل در مسیر `.github/workflows/build.yml` فعال است که با هر انتشار یا کامیت روی گیت‌هاب، فایل‌های `LangAlert-Setup.exe`، `LangAlert.exe` و `langalert_1.0.0_amd64.deb` را به صورت خودکار بیلد کرده و برای دانلود قرار می‌دهد.
 
 ---
 
@@ -154,9 +168,9 @@ In multilingual desktop environments, users frequently start typing without look
 * Python 3.10 or later
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/auto_change.git
-cd auto_change
+# Clone official repository
+git clone https://github.com/MrByte98/LangAlert.git
+cd LangAlert
 
 # Install dependencies
 pip install -r requirements.txt
@@ -170,34 +184,50 @@ python run.py --minimized
 
 ---
 
-### 4. Standalone Executable Packaging
+### 4. Standalone Packages & Installers
 
-#### 🪟 Windows Build:
-Package into a standalone folder and `.zip` archive (no Python required on target machine):
+#### 🪟 Windows:
+Automated single-file installer and portable binary generation:
+* **Single-File Setup Installer (`LangAlert-Setup.exe`):**
+  Installs the application into `%LOCALAPPDATA%\Programs\LangAlert\`, creates ⚡ Desktop & Start Menu shortcuts, and registers in Windows Apps & Features for clean uninstallation.
+* **Single Portable Executable (`LangAlert.exe`):**
+  A self-contained standalone binary that runs immediately without installation.
+
+To build on Windows:
 ```bash
-pip install pyinstaller
+pip install pyinstaller pillow
 python build_standalone.py
 ```
-* Output binary: `dist/LangAlert/LangAlert.exe`
-* Distributable zip: `dist/LangAlert-windows-x64.zip`
+* Output files:
+  - Setup Installer: `dist/LangAlert-Setup.exe`
+  - Portable Executable: `dist/LangAlert.exe`
 
-#### 🐧 Linux Build:
-On any Linux distribution (Ubuntu, Debian, Fedora, Arch):
+#### 🐧 Linux (Debian / Ubuntu / Generic):
+* **Debian/Ubuntu Package (`langalert_1.0.0_amd64.deb`):**
+  Install natively using:
+  ```bash
+  sudo dpkg -i langalert_1.0.0_amd64.deb
+  ```
+  Integrates with your system's Application Menu with the ⚡ icon and symlinks to `/usr/bin/langalert`.
+
+To build on Linux:
 ```bash
 chmod +x build_linux.sh
 ./build_linux.sh
 ```
-* Output archive: `dist/packages/LangAlert-linux-x86_64.tar.gz`
+* Output packages:
+  - Debian package: `dist/packages/langalert_1.0.0_amd64.deb`
+  - Standalone tar.gz: `dist/packages/LangAlert-linux-x86_64.tar.gz`
 
 #### 🚀 Automated Multiplatform CI/CD:
-The repository includes a ready-to-use GitHub Actions workflow at `.github/workflows/build.yml`. On push or tag, native Windows (`.zip`) and Linux (`.tar.gz`) binaries are built and uploaded automatically.
+The repository includes a GitHub Actions workflow at `.github/workflows/build.yml`. On push or tag, native Windows (`LangAlert-Setup.exe`, `LangAlert.exe`) and Linux (`.deb`, `.tar.gz`) binaries are compiled and released automatically.
 
 ---
 
 ### 5. Project Structure
 
 ```
-auto_change/
+LangAlert/
 ├── run.py                     # Application entry point
 ├── build_standalone.py        # Windows/universal PyInstaller packaging script
 ├── build_linux.sh             # Linux standalone build script

@@ -232,11 +232,12 @@ QLabel#BadgeDirection {{
 }}
 
 QLabel#WarningIcon {{
-    background-color: rgba(245, 158, 11, 0.25);
-    color: #f59e0b;
+    background-color: rgba(0, 240, 255, 0.2);
+    color: #facc15;
+    border: 1px solid rgba(0, 240, 255, 0.4);
     border-radius: 14px;
     font-size: 16px;
-    padding: 4px;
+    padding: 2px;
 }}
 
 QFrame#OriginalBox {{

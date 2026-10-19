@@ -3,46 +3,53 @@ System Tray integration for LangAlert.
 Draws dynamic vector icons and provides right-click context menu options.
 """
 from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QFont, QBrush, QPen
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QFont, QBrush, QPen, QLinearGradient, QPolygonF
+from PyQt6.QtCore import Qt, pyqtSignal, QPointF
 
 def create_tray_pixmap(is_active: bool = True, size: int = 64) -> QPixmap:
-    """Generates a crisp high-DPI icon with keyboard symbol and active dot."""
+    """Generates a crisp high-DPI icon with the lightning bolt (⚡) logo and active status dot."""
     pixmap = QPixmap(size, size)
     pixmap.fill(Qt.GlobalColor.transparent)
 
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-    # Outer rounded rectangle (keyboard body)
-    bg_color = QColor("#0284c7") if is_active else QColor("#64748b")
+    # Outer rounded rectangle (Cyber Dark Base)
+    bg_color = QColor("#0a0e1a")
+    border_color = QColor("#00f0ff") if is_active else QColor("#475569")
     painter.setBrush(QBrush(bg_color))
-    painter.setPen(QPen(QColor(255, 255, 255, 100), 2))
-    painter.drawRoundedRect(4, 8, size - 8, size - 16, 12, 12)
+    painter.setPen(QPen(border_color, 2.5))
+    painter.drawRoundedRect(3, 3, size - 6, size - 6, 14, 14)
 
-    # Key grid simulation
-    painter.setBrush(QBrush(QColor(255, 255, 255, 200)))
-    painter.setPen(Qt.PenStyle.NoPen)
-    
-    # Draw mini keycaps
-    key_size = 7
-    gap = 4
-    start_x = 12
-    start_y = 18
+    # Lightning Bolt Polygon (⚡)
+    poly = QPolygonF([
+        QPointF(36, 10),  # Top tip
+        QPointF(22, 33),  # Left middle
+        QPointF(33, 33),  # Left waist
+        QPointF(28, 54),  # Bottom tip
+        QPointF(45, 28),  # Right middle
+        QPointF(34, 28),  # Right waist
+        QPointF(36, 10)   # Back to top
+    ])
 
-    # Row 1
-    for i in range(4):
-        painter.drawRoundedRect(start_x + i * (key_size + gap), start_y, key_size, key_size, 2, 2)
-    # Row 2
-    for i in range(4):
-        painter.drawRoundedRect(start_x + i * (key_size + gap), start_y + key_size + gap, key_size, key_size, 2, 2)
-    # Spacebar
-    painter.drawRoundedRect(start_x + 4, start_y + 2 * (key_size + gap), 26, 6, 2, 2)
+    if is_active:
+        # Electric Cyan to Golden Yellow gradient
+        grad = QLinearGradient(22, 10, 45, 54)
+        grad.setColorAt(0.0, QColor("#00f0ff"))
+        grad.setColorAt(0.5, QColor("#facc15"))
+        grad.setColorAt(1.0, QColor("#ff9900"))
+        painter.setBrush(QBrush(grad))
+        painter.setPen(QPen(QColor(255, 255, 255, 220), 1))
+    else:
+        painter.setBrush(QBrush(QColor("#64748b")))
+        painter.setPen(QPen(QColor(148, 163, 184, 180), 1))
 
-    # Status indicator circle in corner
+    painter.drawPolygon(poly)
+
+    # Status indicator circle in bottom-right corner
     status_color = QColor("#10b981") if is_active else QColor("#ef4444")
     painter.setBrush(QBrush(status_color))
-    painter.setPen(QPen(QColor("#0f172a"), 2))
+    painter.setPen(QPen(QColor("#0a0e1a"), 2))
     painter.drawEllipse(size - 18, size - 18, 14, 14)
 
     painter.end()

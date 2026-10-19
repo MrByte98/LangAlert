@@ -82,7 +82,7 @@ class ToastBadge(QWidget):
         self.title_label.setFont(QFont("Vazirmatn", 13, QFont.Weight.Bold))
         self.title_label.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.icon_label = QLabel("⚠️")
+        self.icon_label = QLabel("⚡")
         self.icon_label.setObjectName("WarningIcon")
         self.icon_label.setFixedSize(28, 28)
         self.icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

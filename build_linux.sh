@@ -28,11 +28,18 @@ python3 build_standalone.py
 # Package into tar.gz
 echo ">> Creating tar.gz package..."
 mkdir -p dist/packages
-cd dist
-tar -czvf packages/LangAlert-linux-x86_64.tar.gz LangAlert
-cd ..
+if [ -d "dist/LangAlert" ]; then
+    cd dist
+    tar -czvf packages/LangAlert-linux-x86_64.tar.gz LangAlert
+    cd ..
+fi
+
+# Package into Debian/Ubuntu .deb
+echo ">> Creating Debian/Ubuntu .deb package..."
+python3 tools/build_deb.py
 
 echo "============================================================"
-echo "BUILD SUCCESSFUL! Linux standalone package:"
-echo "dist/packages/LangAlert-linux-x86_64.tar.gz"
+echo "BUILD SUCCESSFUL! Linux packages:"
+echo "1. Debian/Ubuntu Package: dist/packages/langalert_1.0.0_amd64.deb"
+echo "2. Standalone Archive:   dist/packages/LangAlert-linux-x86_64.tar.gz"
 echo "============================================================"

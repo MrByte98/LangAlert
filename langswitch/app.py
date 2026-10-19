@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFontDatabase, QFont
+from PyQt6.QtGui import QFontDatabase, QFont, QIcon
 
 from .config import config
 from .keyboard_listener import KeyboardListener
@@ -17,7 +17,9 @@ from .ui.tray_icon import LangTrayIcon
 
 def load_vazir_fonts(app: QApplication):
     """Loads bundled Vazirmatn fonts and sets application default font."""
-    font_dir = Path(__file__).parent / "fonts"
+    font_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).parent)) / "fonts"
+    if not font_dir.exists():
+        font_dir = Path(__file__).parent / "fonts"
     for font_file in ["Vazirmatn-Regular.ttf", "Vazirmatn-Bold.ttf"]:
         p = font_dir / font_file
         if p.exists():
@@ -32,8 +34,16 @@ class LangAlertApp:
         # Ensure QApplication exists
         self.qt_app = QApplication.instance() or QApplication(sys.argv)
         self.qt_app.setApplicationName("LangAlert")
-        self.qt_app.setApplicationDisplayName("LangAlert — دستیار زبان کیبورد")
+        self.qt_app.setApplicationDisplayName("⚡ LangAlert — دستیار زبان کیبورد")
         self.qt_app.setQuitOnLastWindowClosed(False)
+
+        # Set default application icon
+        base_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
+        icon_path = base_dir / "assets" / "icon.png"
+        if not icon_path.exists():
+            icon_path = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
+        if icon_path.exists():
+            self.qt_app.setWindowIcon(QIcon(str(icon_path)))
 
         # Load Vazir fonts
         load_vazir_fonts(self.qt_app)
